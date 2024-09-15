@@ -6,13 +6,13 @@ import java.util.*;
 
 public class Scanner {
 
-    private final int[][] transTable = new int[46][30]; // 46 is the number of states; 30 is the number of characters(after compression)
+    private final int[][] transTable = new int[47][30]; // 47 is the number of states; 30 is the number of characters(after compression)
     private BufferedReader buffer;
     private int lineNum = 0;
     private String line = "";
     private int idx = 0;
     private final int BADSTATE = 100;
-    private final Set<Integer> acceptedState = new HashSet<>(Arrays.asList(6, 10, 11, 16, 18, 22, 28, 31, 33, 34, 36, 38, 39, 40, 43, 44, 45));
+    private final Set<Integer> acceptedState = new HashSet<>(Arrays.asList(6, 10, 11, 16, 18, 22, 28, 31, 33, 34, 36, 38, 39, 40, 43, 44, 45, 46));
     private boolean EOF = false;
 
     public Scanner(BufferedReader buffer){
@@ -25,6 +25,9 @@ public class Scanner {
      * @throws IOException
      */
     public Token nextToken() throws IOException {
+        if (EOF) { // Deal with EOF 
+            return Token.EOF(lineNum);
+        }
         int state = 0;
         String lexeme = "";
         Stack<Integer> stack = new Stack<>();
@@ -32,42 +35,44 @@ public class Scanner {
         stack.push(BADSTATE);
         while (state != -1 && !EOF) {
             char c = nextChar();
-            
             lexeme = lexeme + c;
+            if (lexeme.isBlank() && !lexeme.contains("\n")){ // Skip space
+                return nextToken();
+            }
             if (this.acceptedState.contains(state)) {
                 stack.clear();
             }
             stack.push(state);
+            // if (lexeme.length() > 1) {
+            //     System.out.println(lexeme.charAt(lexeme.length() - 2) + " to " + c + ": " + transTable[state][charMap(c)]);
+            // }
             state = this.transTable[state][charMap(c)];
+        
         }
         
         String lexeme_err = lexeme; 
         int idx_err = idx; // For error handling
-        if (EOF) {
-            return Token.EOF(lineNum+1);
-        }
 
+        // Rollback to last accepted state
         while (!this.acceptedState.contains(state) && state != BADSTATE) {
             state = stack.pop();
             if (lexeme.length() > 1) {
                 lexeme = lexeme.substring(0, lexeme.length()-1);
             }
-            
             if (this.idx > 0) {
                 this.idx--; // Rollback
             }
         }
 
-        if (this.acceptedState.contains(state)) {
+        if (this.acceptedState.contains(state)) { 
             int PoS = stateToPOS(state);
             if (PoS == 9) { // Comment
                 idx = line.length() - 1;
             }
-            if (PoS == 11) { // EOL
-                return nextToken();
-            }
-            return new Token(PoS, lexeme, lineNum);
+            Token t = new Token(PoS, lexeme, PoS == 11 ? lineNum-1 : lineNum);
+            return t;
         } else {
+            System.err.println("Length of the invalid: " + lexeme_err.length());
             System.err.println("ERROR " + this.lineNum + ": \"" + lexeme_err + "\" is not a valid word.");
             this.idx = idx_err;
             return new Token(10, lexeme_err, lineNum); // INVALID
@@ -96,6 +101,7 @@ public class Scanner {
         transTable[0][charMap('\r')]=40; //
         transTable[0][charMap('a')]=41; 
         transTable[0][charMap('1')]=33; //
+        transTable[0][charMap('0')]=46; //
         // transTable[0][charMap('\0')]=46; //
 
         // lshift & rshift
@@ -174,23 +180,13 @@ public class Scanner {
         if (this.idx >= this.line.length()) {
             line = buffer.readLine();
             if (line == null) {
-                System.out.println("Reach EOF");
                 this.EOF = true;
-                return 0; 
             }
             idx = 0;
             lineNum++;
             line += "\n"; // Add the newline character back 
-                    if (line == null) {
-            System.out.println("Reach EOF");
-            this.EOF = true;
-            return 0; 
-        }
         }
         char c = this.line.charAt(idx++);
-        if (c == ' ') {
-            return nextChar();
-        }
         return c;
     }
 
@@ -248,6 +244,7 @@ public class Scanner {
             case 11: return 1;
             case 28: return 3;
             case 31: return 4;
+            case 46:
             case 33:
             case 34: return 5;
             case 44:
@@ -261,6 +258,5 @@ public class Scanner {
             default: return 10; 
         }
     }
-
 }
 
