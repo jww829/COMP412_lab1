@@ -25,7 +25,6 @@ public class IR {
 
     public String toString() {
         return String.format("%d: %s %s", this.lineNum, this.opcode, printOperands());
-        // return String.format("%d: %s %s\n", this.lineNum, this.opcode, printOperands());
     }
 
     private String printOperands() {

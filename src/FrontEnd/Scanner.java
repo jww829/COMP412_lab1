@@ -14,6 +14,7 @@ public class Scanner {
     private final int BADSTATE = 100;
     private final Set<Integer> acceptedState = new HashSet<>(Arrays.asList(6, 10, 11, 16, 18, 22, 28, 31, 33, 34, 36, 38, 39, 40, 43, 44, 45, 46));
     private boolean EOF = false;
+    public int errNum;
 
     public Scanner(BufferedReader buffer){
         this.buffer = buffer;
@@ -71,6 +72,7 @@ public class Scanner {
         } else {
             System.err.println("ERROR " + this.lineNum + ": \"" + lexeme_err + "\" is not a valid word.");
             this.idx = idx_err;
+            errNum++;
             return new Token(10, lexeme_err, lineNum); // INVALID
         }
     }

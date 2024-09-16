@@ -7,6 +7,7 @@ import java.util.HashMap;
 public class Parser {
 
     public int opNum;
+    public int errNum;
     private Scanner scanner;
     private Map<String, Opcode> lexemeToOp = new HashMap<>();
     private Token t = Token.nullToken;
@@ -208,6 +209,7 @@ public class Parser {
     }
 
     private void reportError(Token t, String msg) {
+        errNum++;
         System.err.printf("ERROR %d: %s \n", t.getLineNum(), msg);
     }
 

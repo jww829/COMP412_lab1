@@ -149,8 +149,8 @@ public class Main {
       
       Scanner scanner = new Scanner(reader);
       Parser parser = new Parser(scanner);
-      IR ir = parser.parse();
-      if (ir != null && !ir.equals(IR.nullIR)) {
+      parser.parse();
+      if (parser.errNum + scanner.errNum == 0) {
          System.out.printf("Parse succeeded. Processed %d operations.\n", parser.opNum);
       } else {
          System.err.println("Parse found errors.");
