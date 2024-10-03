@@ -1,4 +1,4 @@
-package FrontEnd;
+package src;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +14,8 @@ public class Scanner {
     private final int BADSTATE = 100;
     private final Set<Integer> acceptedState = new HashSet<>(Arrays.asList(6, 10, 11, 16, 18, 22, 28, 31, 33, 34, 36, 38, 39, 40, 43, 44, 45, 46));
     private boolean EOF = false;
+    public int maxSR = -1;
+    public int errNum;
 
     public Scanner(BufferedReader buffer){
         this.buffer = buffer;
@@ -43,9 +45,6 @@ public class Scanner {
                 stack.clear();
             }
             stack.push(state);
-            // if (lexeme.length() > 1) {
-            //     System.out.println(lexeme.charAt(lexeme.length() - 2) + " to " + c + ": " + transTable[state][charMap(c)]);
-            // }
             state = this.transTable[state][charMap(c)];
         
         }
@@ -69,12 +68,18 @@ public class Scanner {
             if (PoS == 9) { // Comment
                 idx = line.length() - 1;
             }
+            if (PoS == 6) { // Register
+                int r = Integer.parseInt(lexeme.substring(1));
+                if (r >= this.maxSR) {
+                    this.maxSR = r;
+                }
+            }
             Token t = new Token(PoS, lexeme, PoS == 11 ? lineNum-1 : lineNum);
             return t;
         } else {
-            System.err.println("Length of the invalid: " + lexeme_err.length());
             System.err.println("ERROR " + this.lineNum + ": \"" + lexeme_err + "\" is not a valid word.");
             this.idx = idx_err;
+            errNum++;
             return new Token(10, lexeme_err, lineNum); // INVALID
         }
     }
@@ -258,5 +263,6 @@ public class Scanner {
             default: return 10; 
         }
     }
+
 }
 

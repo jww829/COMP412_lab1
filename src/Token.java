@@ -1,4 +1,4 @@
-package FrontEnd;
+package src;
 
 public class Token {
 

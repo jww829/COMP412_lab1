@@ -1,4 +1,4 @@
-package src.FrontEnd;
+package src;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,7 +11,6 @@ public class Parser {
     private Scanner scanner;
     private Map<String, Opcode> lexemeToOp = new HashMap<>();
     private Token t = Token.nullToken;
-    
 
     public Parser(Scanner scanner) {
         this.scanner = scanner;
