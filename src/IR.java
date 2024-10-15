@@ -5,18 +5,18 @@ public class IR {
     public IR next = nullIR;
     public IR prev = nullIR;
     public int[] operands = new int[12];
-    public int lineNum = 0;
+    // public int lineNum = 0;
     public Opcode opcode;
     
-    public static final IR nullIR = new IR(-1, Opcode.NULL) {
+    public static final IR nullIR = new IR(Opcode.NULL) {
 
         public String toString() {
             return "This is a null IR";
         }
     };
 
-    public IR(int lineNum, Opcode opcode) {
-        this.lineNum = lineNum;
+    public IR(Opcode opcode) {
+        // this.lineNum = lineNum;
         this.opcode = opcode;
         for (int i=0; i<operands.length; i++) {
             operands[i] = -1;
@@ -24,34 +24,40 @@ public class IR {
     }
 
     public String toString() {
-        return String.format("%d: %s %s", this.lineNum, this.opcode, printOperands());
+        return String.format("%s %s", this.opcode, printOperands());
     }
 
-    public String ILOC() {
+    public String ILOC(String r) { // Default = sr
         String res = "";
+        int x = 0, y = 4, z = 8;
+        if (r.equals("vr")) {
+            x++; y++; z++;
+        } else if (r.equals("pr")) {
+            x+=2; y+=2; z+=2;
+        }
         if (this.opcode == Opcode.STORE) {
             res += "store" + "\tr";
-            res += this.operands[0];
+            res += this.operands[x];
             res += "\t=>\tr";
-            res += this.operands[8];
+            res += this.operands[z];
         } else if (this.opcode == Opcode.LOADI) {
             res += "loadI" + "\t";
             res += this.operands[0];
             res += "\t=>\tr";
-            res += this.operands[8];
+            res += this.operands[z];
         } else if (this.opcode == Opcode.OUTPUT) {
             res += "output" + "\t";
             res += this.operands[0];
         } else if (this.opcode == Opcode.NOP) {
             res += "nop";
         } else {
-            res += this.opcode.toString().toLowerCase() + "\tr" + this.operands[0];
-            if (this.operands[4] != -1) { // There's a second operation
+            res += this.opcode.toString().toLowerCase() + "\tr" + this.operands[x];
+            if (this.operands[y] != -1) {
                 res += ", r";
-                res += this.operands[4];
+                res += this.operands[y];
             }
             res += "\t=>\tr";
-            res += this.operands[8];
+            res += this.operands[z];
         }
         return res;
     }

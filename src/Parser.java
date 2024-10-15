@@ -102,7 +102,8 @@ public class Parser {
             reportError(t, "Unexpected Token " + t.getLexeme());
             return IR.nullIR;
         }
-        IR ir = new IR(t.getLineNum(), lexemeToOp.get(copy.getLexeme()));
+        // IR ir = new IR(t.getLineNum(), lexemeToOp.get(copy.getLexeme()));
+        IR ir = new IR(lexemeToOp.get(copy.getLexeme()));
         ir.operands[0] = reg1;
         ir.operands[8] = reg2;
         return ir;
@@ -132,7 +133,8 @@ public class Parser {
             reportError(t, "Unexpected Token " + t.getLexeme());
             return IR.nullIR;
         }
-        IR ir = new IR(t.getLineNum(), lexemeToOp.get(copy.getLexeme()));
+        // IR ir = new IR(t.getLineNum(), lexemeToOp.get(copy.getLexeme()));
+        IR ir = new IR(lexemeToOp.get(copy.getLexeme()));
         ir.operands[0] = constant;
         ir.operands[8] = reg1;
         // System.out.println("In finishLOADI: " +ir);
@@ -174,7 +176,8 @@ public class Parser {
             reportError(t, "Unexpected Token " + t.getLexeme());
             return IR.nullIR;
         }
-        IR ir = new IR(t.getLineNum(), lexemeToOp.get(copy.getLexeme()));
+        // IR ir = new IR(t.getLineNum(), lexemeToOp.get(copy.getLexeme()));
+        IR ir = new IR(lexemeToOp.get(copy.getLexeme()));
         ir.operands[0] = reg1;
         ir.operands[4] = reg2;
         ir.operands[8] = reg3;
@@ -193,7 +196,8 @@ public class Parser {
             reportError(t, "Unexpected Token " + t.getLexeme());
             return IR.nullIR;
         }
-        IR ir = new IR(t.getLineNum(), Opcode.OUTPUT);
+        // IR ir = new IR(t.getLineNum(), Opcode.OUTPUT);
+        IR ir = new IR(Opcode.OUTPUT);
         ir.operands[0] = constant;
         return ir;
     }
@@ -204,7 +208,8 @@ public class Parser {
             reportError(t, "Unexpected Token " + t.getLexeme());
             return IR.nullIR;
         }
-        return new IR(t.getLineNum(), Opcode.NOP);
+        // return new IR(t.getLineNum(), Opcode.NOP);
+        return new IR(Opcode.NOP);
     }
 
     private void reportError(Token t, String msg) {
